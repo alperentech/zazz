@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Haftalık Plan</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .week {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .day {
+      background: white;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .day h3 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .task {
+      background: #eee;
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .task.done {
+      background: #a5d6a7;
+      text-decoration: line-through;
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Haftalık Çalışma Planı</h1>
+
+<div class="week">
+  <!-- Her gün için bir sütun -->
+  <div class="day">
+    <h3>Pazartesi</h3>
+    <div class="task">AYT Fizik - Vektör</div>
+    <div class="task">Paragraf - 20 Soru</div>
+  </div>
+  <div class="day">
+    <h3>Salı</h3>
+    <div class="task">AYT Fizik - Kuvvet</div>
+    <div class="task">Dil Bilgisi - Fiilimsiler</div>
+  </div>
+  <div class="day">
+    <h3>Çarşamba</h3>
+    <div class="task">AYT Kimya - Atom</div>
+    <div class="task">Paragraf - 30 Soru</div>
+  </div>
+  <div class="day">
+    <h3>Perşembe</h3>
+    <div class="task">TYT Matematik - Problemler</div>
+    <div class="task">AYT Fizik - Tork</div>
+  </div>
+  <div class="day">
+    <h3>Cuma</h3>
+    <div class="task">Paragraf Deneme</div>
+    <div class="task">AYT Biyoloji - Canlılar</div>
+  </div>
+  <div class="day">
+    <h3>Cumartesi</h3>
+    <div class="task">AYT Fizik Deneme</div>
+    <div class="task">TYT Matematik - Test</div>
+  </div>
+  <div class="day">
+    <h3>Pazar</h3>
+    <div class="task">Genel Tekrar</div>
+    <div class="task">Paragraf + Video</div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.task').forEach(task => {
+    task.addEventListener('click', () => {
+      task.classList.toggle('done');
+    });
+  });
+</script>
+
+</body>
+</html>
