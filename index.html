@@ -155,11 +155,24 @@
 
 <section id="net">
   <h2>🧮 Net Hesapla</h2>
-  <input type="number" id="trueCount" placeholder="Doğru sayısı">
-  <input type="number" id="falseCount" placeholder="Yanlış sayısı">
-  <button class="action" onclick="calculateNet()">Hesapla</button>
-  <div id="netResult"></div>
+
+  <div style="background:#fff; padding:10px; border-radius:10px; margin-bottom:15px;">
+    <h3>📘 TYT</h3>
+    <input type="number" id="tytTrue" placeholder="Doğru sayısı">
+    <input type="number" id="tytFalse" placeholder="Yanlış sayısı">
+    <button class="action" onclick="calculateNet('tyt')">Hesapla</button>
+    <div id="tytResult"></div>
+  </div>
+
+  <div style="background:#fff; padding:10px; border-radius:10px;">
+    <h3>📗 AYT</h3>
+    <input type="number" id="aytTrue" placeholder="Doğru sayısı">
+    <input type="number" id="aytFalse" placeholder="Yanlış sayısı">
+    <button class="action" onclick="calculateNet('ayt')">Hesapla</button>
+    <div id="aytResult"></div>
+  </div>
 </section>
+
 
 <section id="backup">
   <h2>💾 Görevleri Yedekle / Geri Yükle</h2>
@@ -190,6 +203,15 @@
     updateLastVisit();
   }
 
+  function deleteTask(day, index) {
+    const data = JSON.parse(localStorage.getItem(planKey)) || {};
+    if (data[day]) {
+      data[day].splice(index, 1);
+      localStorage.setItem(planKey, JSON.stringify(data));
+      loadData();
+    }
+  }
+
   function loadData() {
     const data = JSON.parse(localStorage.getItem(planKey)) || {};
     const area = document.getElementById("weekArea");
@@ -205,8 +227,33 @@
         const taskEl = document.createElement("div");
         taskEl.className = "task";
         if (task.done) taskEl.classList.add("done");
-        taskEl.textContent = task.text;
-        taskEl.onclick = () => toggleDone(day, index);
+
+        // Görev metni
+        const span = document.createElement("span");
+        span.textContent = task.text;
+        span.style.flex = "1";
+        span.style.cursor = "pointer";
+        span.onclick = () => toggleDone(day, index);
+
+        // Silme butonu
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "❌";
+        removeBtn.style.marginLeft = "10px";
+        removeBtn.style.border = "none";
+        removeBtn.style.background = "transparent";
+        removeBtn.style.cursor = "pointer";
+        removeBtn.onclick = (e) => {
+          e.stopPropagation(); // toggleDone tetiklenmesin
+          deleteTask(day, index);
+        };
+
+        // Görev kutusu içine yerleştir
+        taskEl.style.display = "flex";
+        taskEl.style.justifyContent = "space-between";
+        taskEl.style.alignItems = "center";
+        taskEl.appendChild(span);
+        taskEl.appendChild(removeBtn);
+
         div.appendChild(taskEl);
       });
 
@@ -258,12 +305,13 @@
     document.getElementById("chrono").textContent = "00:00";
   }
 
+  // Ahmet oasha sagolsun 2ye ayırdık xdd
   // netler
-  function calculateNet() {
-    const d = parseInt(document.getElementById("trueCount").value) || 0;
-    const y = parseInt(document.getElementById("falseCount").value) || 0;
-    const net = d - (y / 4);
-    document.getElementById("netResult").textContent = `Netin: ${net.toFixed(2)}`;
+  function calculateNet(type) {
+    const trueCount = parseInt(document.getElementById(type + "True").value) || 0;
+    const falseCount = parseInt(document.getElementById(type + "False").value) || 0;
+    const net = trueCount - (falseCount / 4);
+    document.getElementById(type + "Result").textContent = `Netin: ${net.toFixed(2)}`;
   }
 
   // Export - Import
