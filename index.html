@@ -1,37 +1,71 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Haftalık Plan</title>
+  <meta charset="UTF-8">
+  <title>Çalışma Planı Uygulaması</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       font-family: sans-serif;
-      background: #f4f4f4;
       margin: 0;
+      padding: 0;
+      background: #f2f2f2;
+    }
+
+    header {
+      background-color: #1976d2;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 20px;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-around;
+      background: #2196f3;
+      padding: 10px 0;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    section {
+      display: none;
       padding: 20px;
     }
 
-    h1 {
-      text-align: center;
+    section.active {
+      display: block;
     }
 
     .week {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
+      display: flex;
+      flex-wrap: wrap;
       gap: 10px;
-      margin-top: 20px;
+      justify-content: space-between;
     }
 
     .day {
       background: white;
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 10px;
+      width: 13%;
+      min-width: 140px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
     }
 
     .day h3 {
       text-align: center;
-      margin-bottom: 10px;
+      margin-top: 0;
     }
 
     .task {
@@ -40,65 +74,230 @@
       margin: 5px 0;
       border-radius: 5px;
       cursor: pointer;
-      transition: 0.2s;
     }
 
     .task.done {
-      background: #a5d6a7;
+      background: #c8e6c9;
       text-decoration: line-through;
       color: #2e7d32;
+    }
+
+    input, select {
+      padding: 6px;
+      margin: 5px 0;
+      width: 100%;
+    }
+
+    button.action {
+      padding: 8px;
+      margin: 5px 0;
+      background: #1976d2;
+      color: white;
+      border: none;
+      width: 100%;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .timer {
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    @media (max-width: 768px) {
+      .week {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .day {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
 
-<h1>Haftalık Çalışma Planı</h1>
+<header>📚 Çalışma Planım</header>
+<nav>
+  <button onclick="switchTab('plan')">📅 Plan</button>
+  <button onclick="switchTab('add')">➕ Ekle</button>
+  <button onclick="switchTab('timer')">⏱ Kronometre</button>
+  <button onclick="switchTab('net')">🧮 Net</button>
+  <button onclick="switchTab('backup')">💾 Yedekle</button>
+</nav>
 
-<div class="week">
-  <!-- Her gün için bir sütun -->
-  <div class="day">
-    <h3>Pazartesi</h3>
-    <div class="task">AYT Fizik - Vektör</div>
-    <div class="task">Paragraf - 20 Soru</div>
-  </div>
-  <div class="day">
-    <h3>Salı</h3>
-    <div class="task">AYT Fizik - Kuvvet</div>
-    <div class="task">Dil Bilgisi - Fiilimsiler</div>
-  </div>
-  <div class="day">
-    <h3>Çarşamba</h3>
-    <div class="task">AYT Kimya - Atom</div>
-    <div class="task">Paragraf - 30 Soru</div>
-  </div>
-  <div class="day">
-    <h3>Perşembe</h3>
-    <div class="task">TYT Matematik - Problemler</div>
-    <div class="task">AYT Fizik - Tork</div>
-  </div>
-  <div class="day">
-    <h3>Cuma</h3>
-    <div class="task">Paragraf Deneme</div>
-    <div class="task">AYT Biyoloji - Canlılar</div>
-  </div>
-  <div class="day">
-    <h3>Cumartesi</h3>
-    <div class="task">AYT Fizik Deneme</div>
-    <div class="task">TYT Matematik - Test</div>
-  </div>
-  <div class="day">
-    <h3>Pazar</h3>
-    <div class="task">Genel Tekrar</div>
-    <div class="task">Paragraf + Video</div>
-  </div>
-</div>
+<section id="plan" class="active">
+  <h2>📅 Haftalık Plan</h2>
+  <p><strong>Son giriş:</strong> <span id="lastVisit"></span></p>
+  <div class="week" id="weekArea"></div>
+</section>
+
+<section id="add">
+  <h2>➕ Görev Ekle</h2>
+  <select id="daySelect">
+    <option>Pazartesi</option><option>Salı</option><option>Çarşamba</option>
+    <option>Perşembe</option><option>Cuma</option><option>Cumartesi</option><option>Pazar</option>
+  </select>
+  <input type="text" id="taskInput" placeholder="Örn: Paragraf Testi">
+  <button class="action" onclick="addTask()">Ekle</button>
+</section>
+
+<section id="timer">
+  <h2>⏱ Kronometre</h2>
+  <div class="timer" id="chrono">00:00</div>
+  <button class="action" onclick="startTimer()">Başlat</button>
+  <button class="action" onclick="stopTimer()">Durdur</button>
+  <button class="action" onclick="resetTimer()">Sıfırla</button>
+</section>
+
+<section id="net">
+  <h2>🧮 Net Hesapla</h2>
+  <input type="number" id="trueCount" placeholder="Doğru sayısı">
+  <input type="number" id="falseCount" placeholder="Yanlış sayısı">
+  <button class="action" onclick="calculateNet()">Hesapla</button>
+  <div id="netResult"></div>
+</section>
+
+<section id="backup">
+  <h2>💾 Görevleri Yedekle / Geri Yükle</h2>
+  <button class="action" onclick="exportTasks()">Export (İndir)</button>
+  <input type="file" id="importFile" accept=".json" onchange="importTasks()" />
+</section>
 
 <script>
-  document.querySelectorAll('.task').forEach(task => {
-    task.addEventListener('click', () => {
-      task.classList.toggle('done');
-    });
-  });
+  const days = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
+  const planKey = "weeklyPlan";
+  const lastVisitKey = "lastVisit";
+
+  function switchTab(id) {
+    document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    if (id === "plan") loadData();
+  }
+
+  function updateLastVisit() {
+    const now = new Date().toLocaleString("tr-TR");
+    document.getElementById("lastVisit").textContent = now;
+    localStorage.setItem(lastVisitKey, now);
+  }
+
+  function loadLastVisit() {
+    const last = localStorage.getItem(lastVisitKey);
+    document.getElementById("lastVisit").textContent = last || "İlk giriş";
+    updateLastVisit();
+  }
+
+  function loadData() {
+    const data = JSON.parse(localStorage.getItem(planKey)) || {};
+    const area = document.getElementById("weekArea");
+    area.innerHTML = "";
+
+    for (let day of days) {
+      const div = document.createElement("div");
+      div.className = "day";
+      div.innerHTML = `<h3>${day}</h3>`;
+      const tasks = data[day] || [];
+
+      tasks.forEach((task, index) => {
+        const taskEl = document.createElement("div");
+        taskEl.className = "task";
+        if (task.done) taskEl.classList.add("done");
+        taskEl.textContent = task.text;
+        taskEl.onclick = () => toggleDone(day, index);
+        div.appendChild(taskEl);
+      });
+
+      area.appendChild(div);
+    }
+  }
+
+  function toggleDone(day, index) {
+    const data = JSON.parse(localStorage.getItem(planKey));
+    data[day][index].done = !data[day][index].done;
+    localStorage.setItem(planKey, JSON.stringify(data));
+    loadData();
+  }
+
+  function addTask() {
+    const day = document.getElementById("daySelect").value;
+    const task = document.getElementById("taskInput").value.trim();
+    if (!task) return alert("Boş görev girilmez.");
+
+    const data = JSON.parse(localStorage.getItem(planKey)) || {};
+    if (!data[day]) data[day] = [];
+    data[day].push({ text: task, done: false });
+    localStorage.setItem(planKey, JSON.stringify(data));
+    document.getElementById("taskInput").value = "";
+    alert("Görev eklendi!");
+  }
+
+  // kronomometre
+  let timer = null, seconds = 0;
+
+  function startTimer() {
+    if (timer) return;
+    timer = setInterval(() => {
+      seconds++;
+      const min = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const sec = String(seconds % 60).padStart(2, '0');
+      document.getElementById("chrono").textContent = `${min}:${sec}`;
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(timer);
+    timer = null;
+  }
+
+  function resetTimer() {
+    stopTimer();
+    seconds = 0;
+    document.getElementById("chrono").textContent = "00:00";
+  }
+
+  // netler
+  function calculateNet() {
+    const d = parseInt(document.getElementById("trueCount").value) || 0;
+    const y = parseInt(document.getElementById("falseCount").value) || 0;
+    const net = d - (y / 4);
+    document.getElementById("netResult").textContent = `Netin: ${net.toFixed(2)}`;
+  }
+
+  // Export - Import
+  function exportTasks() {
+    const data = localStorage.getItem(planKey);
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "plan.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importTasks() {
+    const file = document.getElementById("importFile").files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const content = JSON.parse(e.target.result);
+        localStorage.setItem(planKey, JSON.stringify(content));
+        alert("Yükleme başarılı!");
+        loadData();
+      } catch {
+        alert("Dosya hatalı!");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // Başlangıçta
+  loadLastVisit();
+  loadData();
 </script>
 
 </body>
